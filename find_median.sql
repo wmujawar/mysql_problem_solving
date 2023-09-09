@@ -38,13 +38,13 @@ SELECT company, salary FROM employees
 ORDER BY 1, 2;
 
 -- Find the median of all the companies
-SELECT id, company,salary
+SELECT company, ROUND(AVG(salary), 2)
 FROM (
 	SELECT *,
 			ROW_NUMBER() OVER(PARTITION BY company ORDER BY salary) AS rn,
 			COUNT(*) OVER(PARTITION BY company ORDER BY salary ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS cnt
 	FROM employees
 ) emp
-WHERE rn IN (CEIL(cnt / 2), cnt / 2 + 1);
-
+WHERE rn IN (CEIL(cnt / 2), cnt / 2 + 1)
+GROUP BY 1;
 
