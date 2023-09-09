@@ -7,8 +7,6 @@ CREATE TABLE employees (
 	salary NUMERIC(8, 2) NOT NULL
 );
 
-TRUNCATE employees;
-
 -- Scaler
 INSERT INTO employees values (1, 'Scaler', 2053);
 INSERT INTO employees values (7, 'Scaler', 1111);
