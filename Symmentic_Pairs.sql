@@ -1,0 +1,33 @@
+USE practice;
+
+CREATE TABLE Functions (
+	X INTEGER,
+    Y INTEGER
+);
+
+INSERT INTO Functions VALUES(20, 20);
+INSERT INTO Functions VALUES(20, 20);
+INSERT INTO Functions VALUES(20, 21);
+INSERT INTO Functions VALUES(23, 22);
+INSERT INTO Functions VALUES(22, 23);
+INSERT INTO Functions VALUES(21, 20);
+
+SELECT * FROM Functions;
+
+SELECT X, Y
+FROM Functions
+GROUP BY X, Y
+HAVING COUNT(X) > 1
+
+UNION
+
+SELECT X, Y
+FROM (
+	SELECT f1.X, f1.Y
+	FROM Functions f1 CROSS JOIN Functions f2
+	WHERE NOT (f1.X = f2.X AND f1.Y = f2.Y)
+	AND f1.X = f2.Y AND f2.X = f1.Y
+	AND f1.X <= f1.Y
+	ORDER BY 1
+) temp
+ORDER BY 1;
