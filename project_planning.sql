@@ -1,5 +1,7 @@
 USE practice;
 
+DROP TABLE IF EXISTS projects;
+
 CREATE TABLE projects (
 	task_id INTEGER,
     start_date DATE,

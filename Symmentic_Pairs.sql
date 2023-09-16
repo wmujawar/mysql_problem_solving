@@ -1,5 +1,7 @@
 USE practice;
 
+DROP TABLE IF EXISTS Functions;
+
 CREATE TABLE Functions (
 	X INTEGER,
     Y INTEGER

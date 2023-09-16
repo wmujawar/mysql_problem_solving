@@ -1,5 +1,6 @@
-CREATE DATABASE ecommerce;
-USE ecommerce;
+USE practice;
+
+DROP TABLE IF EXISTS orders;
 
 CREATE TABLE orders (
 	order_id INTEGER NOT NULL,

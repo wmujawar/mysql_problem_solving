@@ -1,6 +1,6 @@
-CREATE DATABASE practice;
 USE practice;
 
+DROP TABLE IF EXISTS employees;
 CREATE TABLE employees (
 	id integer NOT NULL,
 	company varchar(50) NOT NULL,

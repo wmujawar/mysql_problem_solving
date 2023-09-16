@@ -1,25 +1,25 @@
-use practice;
+USE practice;
 
-drop table if exists batch;
-drop table if exists orders;
+DROP TABLE IF EXISTS batch;
+DROP TABLE IF EXISTS orders;
 
-create table batch (batch_id varchar(10), quantity integer);
-create table orders (order_number varchar(10), quantity integer);
+CREATE TABLE batch (batch_id varchar(10), quantity integer);
+CREATE TABLE orders (order_number varchar(10), quantity integer);
 
 
-insert into batch values ('B1', 5);
-insert into batch values ('B2', 12);
-insert into batch values ('B3', 8);
+INSERT INTO batch VALUES ('B1', 5);
+INSERT INTO batch VALUES ('B2', 12);
+INSERT INTO batch VALUES ('B3', 8);
 
-insert into orders values ('O1', 2);
-insert into orders values ('O2', 8);
-insert into orders values ('O3', 2);
-insert into orders values ('O4', 5);
-insert into orders values ('O5', 9);
-insert into orders values ('O6', 5);
+INSERT INTO orders VALUES ('O1', 2);
+INSERT INTO orders VALUES ('O2', 8);
+INSERT INTO orders VALUES ('O3', 2);
+INSERT INTO orders VALUES ('O4', 5);
+INSERT INTO orders VALUES ('O5', 9);
+INSERT INTO orders VALUES ('O6', 5);
 
-select * from batch;
-select * from orders;
+SELECT * FROM batch;
+SELECT * FROM orders;
 
 WITH batch_cte AS
 (
@@ -67,3 +67,4 @@ LEFT OUTER JOIN batch_cte b
 ON o.rn = b.rn
 GROUP BY 1, 2
 ORDER BY order_number, batch_id;
+ 

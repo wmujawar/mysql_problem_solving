@@ -3,36 +3,36 @@ USE practice;
 
 -- DATASET
 DROP TABLE IF EXISTS candidates;
-create table candidates
+CREATE TABLE candidates
 (
-    id      int,
-    gender  varchar(1),
-    age     int,
-    party   varchar(20)
+    id      INT,
+    gender  VARCHAR(1),
+    age     INT,
+    party   VARCHAR(20)
 );
-insert into candidates values(1,'M',55,'Democratic');
-insert into candidates values(2,'M',51,'Democratic');
-insert into candidates values(3,'F',62,'Democratic');
-insert into candidates values(4,'M',60,'Republic');
-insert into candidates values(5,'F',61,'Republic');
-insert into candidates values(6,'F',58,'Republic');
+INSERT INTO candidates VALUES(1,'M',55,'Democratic');
+INSERT INTO candidates VALUES(2,'M',51,'Democratic');
+INSERT INTO candidates VALUES(3,'F',62,'Democratic');
+INSERT INTO candidates VALUES(4,'M',60,'Republic');
+INSERT INTO candidates VALUES(5,'F',61,'Republic');
+INSERT INTO candidates VALUES(6,'F',58,'Republic');
 
 DROP TABLE IF EXISTS results;
-create table results
+CREATE TABLE results
 (
-    constituency_id     int,
-    candidate_id        int,
+    constituency_id     INT,
+    candidate_id        INT,
     votes               int
 );
-insert into results values(1,1,847529);
-insert into results values(1,4,283409);
-insert into results values(2,2,293841);
-insert into results values(2,5,394385);
-insert into results values(3,3,429084);
-insert into results values(3,6,303890);
+INSERT INTO results VALUES(1,1,847529);
+INSERT INTO results VALUES(1,4,283409);
+INSERT INTO results VALUES(2,2,293841);
+INSERT INTO results VALUES(2,5,394385);
+INSERT INTO results VALUES(3,3,429084);
+INSERT INTO results VALUES(3,6,303890);
 
-select * from candidates;
-select * from results;
+SELECT * FROM candidates;
+SELECT * FROM results;
 
 /*
 	Given a database of the results of an election, find the number of seats won by each party. 
@@ -52,7 +52,7 @@ FROM
 	FROM results r
 	INNER JOIN candidates c
 	ON r.candidate_id = c.id
-) temp
+) elections_result
 WHERE rn = 1
 GROUP BY party
 ORDER BY COUNT(1) DESC;
