@@ -103,6 +103,87 @@ INSERT INTO warehouse VALUES ('SH001',  250,   250,   'InBound',  '2019-05-20 0:
 
 SELECT * FROM warehouse;
 
+-- SOLUTION #1 --
+WITH wh AS
+(
+	SELECT *
+    FROM warehouse
+    ORDER BY event_datetime DESC
+),
+
+days AS
+(
+	SELECT OnHandQuantity,
+		event_datetime AS day_1,
+		DATE_SUB(event_datetime, INTERVAL 90 DAY) AS day_90,
+		DATE_SUB(event_datetime, INTERVAL 180 DAY) AS day_180,
+		DATE_SUB(event_datetime, INTERVAL 270 DAY) AS day_270,
+		DATE_SUB(event_datetime, INTERVAL 365 DAY) AS day_365
+    FROM wh
+    LIMIT 1
+),
+
+delta_values AS
+(
+	SELECT IFNULL(SUM(OnHandQuantityDelta), 0) AS delta
+	FROM wh
+	CROSS JOIN days d
+	WHERE event_datetime BETWEEN d.day_90 AND d.day_1
+	AND event_type = 'InBound'
+
+	UNION ALL
+
+	SELECT IFNULL(SUM(OnHandQuantityDelta), 0) AS delta
+	FROM wh
+	CROSS JOIN days d
+	WHERE event_datetime BETWEEN d.day_180 AND d.day_90
+	AND event_type = 'InBound'
+
+	UNION ALL
+
+	SELECT IFNULL(SUM(OnHandQuantityDelta), 0) AS delta
+	FROM wh
+	CROSS JOIN days d
+	WHERE event_datetime BETWEEN d.day_270 AND d.day_180
+	AND event_type = 'InBound'
+
+	UNION ALL
+
+	SELECT IFNULL(SUM(OnHandQuantityDelta), 0) AS delta
+	FROM wh
+	CROSS JOIN days d
+	WHERE event_datetime BETWEEN d.day_365 AND d.day_270
+	AND event_type = 'InBound'
+),
+
+delta_value_plus_previous_delta AS
+(
+	SELECT delta, OnHandQuantity,
+		IFNULL(LAG(delta, 1) OVER(), 0) AS prev_1_delta,
+		IFNULL(LAG(delta, 2) OVER(), 0) AS prev_2_delta,
+		IFNULL(LAG(delta, 3) OVER(), 0) AS prev_3_delta
+	FROM delta_values
+	CROSS JOIN days
+),
+
+final_delta_value AS
+(
+	SELECT CASE 
+			WHEN (OnHandQuantity - (prev_1_delta + prev_2_delta + prev_3_delta)) < 0 THEN delta -- Assumung that delta is zero
+			WHEN delta > (OnHandQuantity - (prev_1_delta + prev_2_delta + prev_3_delta))
+				THEN (OnHandQuantity - (prev_1_delta + prev_2_delta + prev_3_delta))
+				ELSE delta END AS delta,
+			ROW_NUMBER() OVER() AS rn
+	FROM delta_value_plus_previous_delta
+)
+
+SELECT MAX(CASE WHEN rn = 1 THEN delta END) AS '0-90 days old',
+	MAX(CASE WHEN rn = 2 THEN delta END) AS '90-180 days old',
+	MAX(CASE WHEN rn = 3 THEN delta END) AS '180-270 days old',
+	MAX(CASE WHEN rn = 4 THEN delta END) AS '270-365 days old'
+FROM final_delta_value;
+
+-- SOLUTION #2 --
 WITH wh AS
 (
 	SELECT *
@@ -172,7 +253,7 @@ inventory_270_final AS
 					ELSE day_270_value END, 0) AS day_270_value
     FROM days
     CROSS JOIN inventory_270
-    CROSS JOIN inventory_180
+    CROSS JOIN inventory_180_final
     CROSS JOIN inventory_90_final
 ),
 
@@ -191,8 +272,8 @@ inventory_365_final AS
 					ELSE day_365_value END, 0) AS day_365_value
     FROM days
     CROSS JOIN inventory_365
-    CROSS JOIN inventory_270
-    CROSS JOIN inventory_180
+    CROSS JOIN inventory_270_final
+    CROSS JOIN inventory_180_final
     CROSS JOIN inventory_90_final
 )
 
@@ -204,5 +285,3 @@ FROM inventory_90_final
 CROSS JOIN inventory_180_final
 CROSS JOIN inventory_270_final
 CROSS JOIN inventory_365_final;
-
-
